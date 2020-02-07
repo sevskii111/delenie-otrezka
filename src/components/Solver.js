@@ -72,7 +72,7 @@ const Solver = () => {
       }
       i++;
       newSteps.push([a, b]);
-      if (i > 1000000) {
+      if (i > 1000) {
         setSteps(newSteps);
         setEpsError(true);
         return;
