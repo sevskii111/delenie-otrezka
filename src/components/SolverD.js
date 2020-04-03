@@ -11,7 +11,7 @@ import {
 } from "reactstrap";
 import { parse } from "mathjs";
 
-const Solver = () => {
+const SolverD = () => {
   const [expression, setExpression] = useState("x^3+2x-2");
   const [expressionError, setExpressionError] = useState(false);
   const [compiledExpression, setCompiledExpression] = useState({});
@@ -21,6 +21,7 @@ const Solver = () => {
   const [epsError, setEpsError] = useState(false);
   const [steps, setSteps] = useState([]);
   const [showSteps, setShowSteps] = useState(false);
+  const [resultWarning, setResultWarning] = useState(false);
   const [result, setResult] = useState(0.1);
 
   useEffect(() => {
@@ -73,11 +74,24 @@ const Solver = () => {
       i++;
       newSteps.push([a, b]);
       if (i > 1000) {
+        setResultWarning(true);
         setSteps(newSteps);
         setEpsError(true);
         return;
       }
     }
+    const aScope = {
+      x: a
+    };
+    const bScope = {
+      x: b
+    };
+
+    setResultWarning(
+      compiledExpression.evaluate(aScope) *
+        compiledExpression.evaluate(bScope) >
+        0
+    );
     setSteps(newSteps);
     setResult((a + b) / 2);
   }, [compiledExpression, intervalStart, intervalEnd, eps]);
@@ -162,6 +176,11 @@ const Solver = () => {
             Значение корня с заданной точностью равно: <b>{result}</b>
           </Col>
         </Row>
+        <Row hidden={!resultWarning}>
+          <Col className="text-danger">
+            Вероятно вычесленный корень не является верным
+          </Col>
+        </Row>
         <div className="mt-1" hidden={expressionError}>
           <Row>
             <Col xs={4}>
@@ -187,4 +206,4 @@ const Solver = () => {
   );
 };
 
-export default Solver;
+export default SolverD;
